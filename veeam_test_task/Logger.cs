@@ -12,10 +12,12 @@
         public Logger(string log_path)
         {
             logPath = log_path;
+            if (File.Exists(logFilePath))
+                File.Delete(logFilePath);
         }
-        public void Log(LogActivity activity, string filePath)
+        public void Log(LogActivity activity, string filePath, string exceptionMessage = "")
         {
-            string line = $"[{DateTime.Now}] [{activity}] - {filePath}";
+            string line = string.IsNullOrEmpty(exceptionMessage) ? $"[{DateTime.Now}] [{activity}] - {filePath}" : $"[{DateTime.Now}] [{activity}] Failed - {filePath}\n Error: {exceptionMessage}";
             Console.WriteLine(line);
             File.AppendAllText(logFilePath, line + Environment.NewLine);
         }
