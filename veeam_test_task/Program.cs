@@ -31,17 +31,24 @@ namespace veeam_test_task
                 Options = { sourceDirectory, replicaDirectory, syncInterval, logDirectory },
             };
 
-            rootCommand.SetAction(parseResult =>
+            rootCommand.SetAction((Func<ParseResult, int>)(parseResult =>
             {
                 var sourceDir = parseResult.GetValue(sourceDirectory);
                 var replicaDir = parseResult.GetValue(replicaDirectory);
                 var interval = parseResult.GetValue(syncInterval);
                 var logDest = parseResult.GetValue(logDirectory);
 
-                Console.WriteLine($"Source Directory: {sourceDir}\nReplica Directory: {replicaDir}\nInterval: {interval}\nLog Directory: {logDest}");
                 var logger = new Logger(logDest!);
-                logger.Log(LogActivity.CREATE, sourceDir!);
-            });
+                var syncEngine = new SyncEngine(sourceDir!, replicaDir!, logger);
+                Console.WriteLine($"\n{interval}\n");
+                while (true)
+                {
+                    syncEngine.Sync();
+                    Thread.Sleep(TimeSpan.FromSeconds(interval));
+
+                }
+            }));
+
             return rootCommand.Parse(args).Invoke();
         }
     }
