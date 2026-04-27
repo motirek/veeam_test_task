@@ -6,9 +6,11 @@ namespace tests
     {
         private string testLogPath = Path.Combine(Path.GetTempPath(), "test_log");
         private Logger logger;
+        private StringWriter consoleOutput = new StringWriter();
         public LoggerTests()
         {
             logger = new Logger(testLogPath);
+            Console.SetOut(consoleOutput);
         }
         [Fact]
         public void WriteCreateActivity()
@@ -17,6 +19,7 @@ namespace tests
             logger.Log(LogActivity.CREATE, "test.txt", timestamp);
             var logContent = File.ReadAllLines(Path.Combine(testLogPath, logger.LogFileName));
             Assert.Equal($"[{timestamp}] [CREATE] - test.txt", logContent[0]);
+            Assert.Equal($"[{timestamp}] [CREATE] - test.txt", consoleOutput.ToString().TrimEnd());
         }
         [Fact]
         public void WriteUpdateActivity()
@@ -25,6 +28,7 @@ namespace tests
             logger.Log(LogActivity.UPDATE, "test.txt", timestamp);
             var logContent = File.ReadAllLines(Path.Combine(testLogPath, logger.LogFileName));
             Assert.Equal($"[{timestamp}] [UPDATE] - test.txt", logContent[0]);
+            Assert.Equal($"[{timestamp}] [UPDATE] - test.txt", consoleOutput.ToString().TrimEnd());
         }
         [Fact]
         public void WriteDeleteActivity()
@@ -33,6 +37,7 @@ namespace tests
             logger.Log(LogActivity.DELETE, "test.txt", timestamp);
             var logContent = File.ReadAllLines(Path.Combine(testLogPath, logger.LogFileName));
             Assert.Equal($"[{timestamp}] [DELETE] - test.txt", logContent[0]);
+            Assert.Equal($"[{timestamp}] [DELETE] - test.txt", consoleOutput.ToString().TrimEnd());
         }
         [Fact]
         public void AppendsMultipleEntrie()
@@ -44,6 +49,7 @@ namespace tests
             Assert.Equal(2, logContent.Length);
             Assert.Equal($"[{timestamp}] [DELETE] - test.txt", logContent[0]);
             Assert.Equal($"[{timestamp}] [UPDATE] - test1.txt", logContent[1]);
+            Assert.Equal($"[{timestamp}] [DELETE] - test.txt{Environment.NewLine}[{timestamp}] [UPDATE] - test1.txt", consoleOutput.ToString().TrimEnd());
         }
         [Fact]
         public void WriteLogWithExceptionMessage()
@@ -53,6 +59,7 @@ namespace tests
             var logContent = File.ReadAllLines(Path.Combine(testLogPath, logger.LogFileName));
             Assert.Equal($"[{timestamp}] [UPDATE] Failed - test.txt", logContent[0]);
             Assert.Equal($" Error: File is locked", logContent[1]);
+            Assert.Equal($"[{timestamp}] [UPDATE] Failed - test.txt{Environment.NewLine} Error: File is locked", consoleOutput.ToString().TrimEnd());
 
         }
         [Fact]
@@ -67,7 +74,9 @@ namespace tests
         }
         public void Dispose()
         {
-            //Directory.Delete(testLogPath, true);
+            Directory.Delete(testLogPath, true);
+            Console.SetOut(new StreamWriter(Console.OpenStandardOutput()));
+            consoleOutput.Dispose();
         }
     }
 }
