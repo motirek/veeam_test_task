@@ -8,6 +8,7 @@
     {
         private string logPath { get; set; }
         private const string logFileName = "log.txt";
+        public string LogFileName { get { return logFileName; } }
         private string logFilePath => Path.Combine(logPath, logFileName);
         public Logger(string log_path)
         {
@@ -17,9 +18,13 @@
             if (File.Exists(logFilePath))
                 File.Delete(logFilePath);
         }
-        public void Log(LogActivity activity, string filePath, string exceptionMessage = "")
+        public void Log(LogActivity activity, string filePath)
         {
-            string line = string.IsNullOrEmpty(exceptionMessage) ? $"[{DateTime.Now}] [{activity}] - {filePath}" : $"[{DateTime.Now}] [{activity}] Failed - {filePath}\n Error: {exceptionMessage}";
+            Log(activity, filePath, DateTime.Now, "");
+        }
+        public void Log(LogActivity activity, string filePath, DateTime timestamp, string exceptionMessage = "")
+        {
+            string line = string.IsNullOrEmpty(exceptionMessage) ? $"[{timestamp}] [{activity}] - {filePath}" : $"[{timestamp}] [{activity}] Failed - {filePath}{Environment.NewLine} Error: {exceptionMessage}";
             Console.WriteLine(line);
             File.AppendAllText(logFilePath, line + Environment.NewLine);
         }
