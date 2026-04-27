@@ -40,7 +40,6 @@ namespace veeam_test_task
 
                 var logger = new Logger(logDest!);
                 var syncEngine = new SyncEngine(sourceDir!, replicaDir!, logger);
-                Console.WriteLine($"\n{interval}\n");
                 while (true)
                 {
                     syncEngine.Sync();
