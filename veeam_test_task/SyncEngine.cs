@@ -45,22 +45,22 @@ namespace veeam_test_task
                 var relativePath = Path.GetRelativePath(sourceDirectory, sourceFile);
                 var replicaFile = Path.Combine(replicaDirectory, relativePath);
 
-                if (!File.Exists(replicaFile))
+                try
                 {
-                    File.Copy(sourceFile, replicaFile);
-                    logger.Log(LogActivity.CREATE, replicaFile);
-                }
-                else if (!FilesIdentical(sourceFile, replicaFile))
-                {
-                    try
+                    if (!File.Exists(replicaFile))
+                    {
+                        File.Copy(sourceFile, replicaFile);
+                        logger.Log(LogActivity.CREATE, replicaFile);
+                    }
+                    else if (!FilesIdentical(sourceFile, replicaFile))
                     {
                         File.Copy(sourceFile, replicaFile, true);
                         logger.Log(LogActivity.UPDATE, replicaFile);
                     }
-                    catch (IOException exception)
-                    {
-                        logger.Log(LogActivity.UPDATE, replicaFile, exception.Message);
-                    }
+                }
+                catch (IOException exception)
+                {
+                    logger.Log(LogActivity.UPDATE, replicaFile, DateTime.Now, exception.Message);
                 }
             }
         }
