@@ -11,3 +11,5 @@
       -l, --log-directory <l> (REQUIRED)      Log destination
       -?, -h, --help                          Show help and usage information
       --version                               Show version
+
+To stop the synchronization press CTRL+C
