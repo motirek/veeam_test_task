@@ -12,6 +12,8 @@
         public Logger(string log_path)
         {
             logPath = log_path;
+            if (!Directory.Exists(logPath))
+                Directory.CreateDirectory(logPath);
             if (File.Exists(logFilePath))
                 File.Delete(logFilePath);
         }

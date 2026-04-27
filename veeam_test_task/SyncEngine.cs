@@ -13,6 +13,12 @@ namespace veeam_test_task
             sourceDirectory = source_directory;
             replicaDirectory = replica_directory;
             logger = _logger;
+
+
+            if (!Directory.Exists(source_directory))
+                Directory.CreateDirectory(source_directory);
+            if (!Directory.Exists(replicaDirectory))
+                Directory.CreateDirectory(replicaDirectory);
         }
 
         public void Sync()
